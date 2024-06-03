@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiDrawer from '@mui/material/Drawer';
@@ -9,19 +9,16 @@ import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import { mainListItems, secondaryListItems } from './listItems';
+import { Paper } from '@mui/material';
+import SignUp from '../User/SignUp';
+import ListUser from '../User/ListUser';
+import Livres from '../Livre/livreList';
 
-
-
-
+import { mainListItems, secondaryListItems } from '../listItems';  
 
 const drawerWidth = 240;
 
@@ -66,16 +63,37 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
         },
       }),
     },
-  }),
+  })
 );
 
-// TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
 export default function Dashboard() {
   const [open, setOpen] = React.useState(true);
+  const [showUserList, setShowUserList] = React.useState(false);
+  const [showLivreList, setShowLivreList] = React.useState(false);
+  const [showForm, setShowForm] = React.useState(false);
+
   const toggleDrawer = () => {
     setOpen(!open);
+  };
+
+  const handleShowUserList = () => {
+    setShowUserList(true);
+    setShowLivreList(false);
+    setShowForm(false);
+  };
+
+  const handleShowLivreList = () => {
+    setShowLivreList(true);
+    setShowUserList(false);
+    setShowForm(false);
+  };
+
+  const handleShowForm = () => {
+    setShowForm(true);
+    setShowLivreList(false);
+    setShowUserList(false);
   };
 
   return (
@@ -83,51 +101,30 @@ export default function Dashboard() {
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
         <AppBar position="absolute" open={open}>
-          <Toolbar
-            sx={{
-              pr: '24px', // keep right padding when drawer closed
-            }}
-          >
+          <Toolbar sx={{ pr: '24px' }}>
             <IconButton
               edge="start"
               color="inherit"
               aria-label="open drawer"
               onClick={toggleDrawer}
-              sx={{
-                marginRight: '36px',
-                ...(open && { display: 'none' }),
-              }}
+              sx={{ marginRight: '36px', ...(open && { display: 'none' }) }}
             >
               <MenuIcon />
             </IconButton>
-            <Typography
-              component="h1"
-              variant="h6"
-              color="inherit"
-              //noWrap
-            
-            >
+            <Typography component="h1" variant="h6" color="inherit">
               BOOKSTORE
             </Typography>
-            
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
-          <Toolbar
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              px: [1],
-            }}
-          >
+          <Toolbar sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', px: [1] }}>
             <IconButton onClick={toggleDrawer}>
               <ChevronLeftIcon />
             </IconButton>
           </Toolbar>
           <Divider />
           <List component="nav">
-            {mainListItems}
+            {mainListItems(handleShowUserList, handleShowLivreList, handleShowForm)}
             {secondaryListItems}
           </List>
         </Drawer>
@@ -135,9 +132,7 @@ export default function Dashboard() {
           component="main"
           sx={{
             backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
+              theme.palette.mode === 'light' ? theme.palette.grey[100] : theme.palette.grey[900],
             flexGrow: 1,
             height: '100vh',
             overflow: 'auto',
@@ -145,11 +140,29 @@ export default function Dashboard() {
         >
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            <Grid container spacing={3}>
-              
-             
+            <Grid container spacing={2} justifyContent="center" alignItems="center">
+              {showUserList && (
+                <Grid item xs={12}>
+                  <Paper sx={{ p: 2 }}>
+                    <ListUser />
+                  </Paper>
+                </Grid>
+              )}
+              {showLivreList && (
+                <Grid item xs={12}>
+                  <Paper sx={{ p: 2 }}>
+                    <Livres />
+                  </Paper>
+                </Grid>
+              )}
+              {showForm && (
+                <Grid item xs={12}>
+                  <Paper sx={{ p: 2 }}>
+                    <SignUp />
+                  </Paper>
+                </Grid>
+              )}
             </Grid>
-           
           </Container>
         </Box>
       </Box>

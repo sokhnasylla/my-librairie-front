@@ -1,72 +1,88 @@
-import * as React from 'react';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import ListSubheader from '@mui/material/ListSubheader';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import PeopleIcon from '@mui/icons-material/People';
-import BarChartIcon from '@mui/icons-material/BarChart';
-import LayersIcon from '@mui/icons-material/Layers';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import { FaBookOpen } from "react-icons/fa";
-import { FaUserPlus } from "react-icons/fa";
+// src/Components/Pages/DashbordAdmin/Dashboard/listItems.js
 
-export const mainListItems = (
+import React from 'react';
+import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import FilterNoneOutlinedIcon from '@mui/icons-material/FilterNoneOutlined';
+import NoteIcon from '@mui/icons-material/Note';
+import LayersIcon from '@mui/icons-material/Layers';
+import PeopleIcon from '@mui/icons-material/People';
+import { Link } from '@mui/material';
+import { FaBookOpen, FaChartLine, FaUserPlus } from "react-icons/fa";
+import { Book } from '@mui/icons-material';
+
+export const mainListItems = (handleShowUserList, handleShowLivreList, handleShowForm) => (
   <React.Fragment>
-    <ListItemButton>
+    <ListItemButton onClick={handleShowUserList}>
       <ListItemIcon>
-      <PeopleIcon />
+        <PeopleIcon size={25} />
       </ListItemIcon>
       <ListItemText primary="Utilisateurs" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton onClick={handleShowLivreList}>
       <ListItemIcon>
-        <FaBookOpen />
+        <Book />
       </ListItemIcon>
       <ListItemText primary="Livres" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton onClick={handleShowForm}>
       <ListItemIcon>
-      <FaUserPlus />
+        <FaUserPlus />
       </ListItemIcon>
       <ListItemText primary="Ajouter un utilisateur" />
     </ListItemButton>
     <ListItemButton>
       <ListItemIcon>
-      <LayersIcon />
+        <FaBookOpen />
       </ListItemIcon>
       <ListItemText primary="Ajouter un livre" />
     </ListItemButton>
     <ListItemButton>
       <ListItemIcon>
-      <BarChartIcon />
+        <FilterNoneOutlinedIcon />
       </ListItemIcon>
-      <ListItemText primary="Integrations" />
+      <ListItemText primary="Gestion des emprunts" />
     </ListItemButton>
+    <ListItemButton>
+      <ListItemIcon>
+        <NoteIcon />
+      </ListItemIcon>
+      <ListItemText primary="Carnet D'adresse" />
+    </ListItemButton>
+    <ListItemButton>
+      <ListItemIcon>
+        <AssignmentIcon />
+      </ListItemIcon>
+      <ListItemText primary="Supervision Metier" />
+    </ListItemButton>
+    <ListItemButton>
+      <ListItemIcon>
+        <LayersIcon />
+      </ListItemIcon>
+      <ListItemText primary="Supervision Technique" />
+    </ListItemButton>
+    <Link href="/admin/role" color="initial" underline='none'>
+      <ListItemButton>
+        <ListItemIcon>
+          <PeopleIcon />
+        </ListItemIcon>
+        <ListItemText primary="Roles" />
+      </ListItemButton>
+    </Link>
+    <Link href="/admin/user" color="initial" underline='none'>
+      <ListItemButton>
+        <ListItemIcon>
+          <PeopleIcon />
+        </ListItemIcon>
+        <ListItemText primary="Utilisateurs" />
+      </ListItemButton>
+    </Link>
   </React.Fragment>
 );
 
 export const secondaryListItems = (
   <React.Fragment>
-   
-    <ListItemButton>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Current month" />
-    </ListItemButton>
-    <ListItemButton>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Last quarter" />
-    </ListItemButton>
-    <ListItemButton>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Year-end sale" />
-    </ListItemButton>
+    {/* Add secondary list items here if any */}
   </React.Fragment>
 );

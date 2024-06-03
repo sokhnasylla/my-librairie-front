@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import background from '../../../Components/images/background.png'
 import { InputLabel, MenuItem, Select } from '@mui/material';
-import { useState } from 'react';
+import { useState } from 'react'; 
 import axios from 'axios';
 import { getTokenFromLocalStorage, storeTokenInLocalStorage } from './authUtils';
 import { Navigate } from 'react-router-dom';
@@ -58,7 +58,7 @@ const[role,setRole]= React.useState("");
       });
       console.log(response);
       if(response.data.statusCode=200){
-        console.log(response.data.token);
+        /*console.log(response.data.token);*/
         setLoggedSucess(true);
         storeTokenInLocalStorage(response.data.token);
       }
@@ -77,7 +77,7 @@ const[role,setRole]= React.useState("");
     const token = getTokenFromLocalStorage();
     const mytoken = jwtDecode(token);
     const login = mytoken.sub;
-    console.log(login);
+    /*console.log(login);*/
 
     try {
       const response = await axios.get(`http://localhost:8080/public/searchByLogin?login=${login}`);
@@ -93,7 +93,7 @@ const[role,setRole]= React.useState("");
   };
    if(isLoggedSuccess){
    fetchUserDetails();
-   console.log(role);
+  /* console.log(role);*/
    if(role === 'ADMIN'){
     return <Navigate to="/admin/dashboard"/>
    }
