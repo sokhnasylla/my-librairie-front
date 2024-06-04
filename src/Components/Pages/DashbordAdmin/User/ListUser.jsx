@@ -2,16 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { IconButton, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { Table } from 'react-bootstrap';
 import { getTokenFromLocalStorage } from '../../Auth/authUtils';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
+import Title from '../Title';
+import EditUser from './EditUser'
 
-function ListUser() {
+
+function ListUser(onEditUser) {
     const [data, setData] = useState([]);
     const [error, setError] = useState(null);
+    const [editingUserId, setEditingUserId] = useState(null);
     const token = getTokenFromLocalStorage();
-    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -31,27 +34,39 @@ function ListUser() {
     }, [token]);
 
     const handleDeleteClick = async (id) => {
+        console.log('ID de l\'utilisateur à supprimer:', id);
+        try {
+            const response = await axios.delete(`http://localhost:8080/admin/deleteuser/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (response.status === 200) {
+                setData(data.filter(user => user.id !== id)); 
+            }
+        } catch (error) {
+            console.error('Une erreur s\'est produite lors de la suppression de l\'utilisateur : ', error);
+        }
+    };
+
+    const handleEditClick = async (id) => {
         console.log(id);
         try {
-          const response = await fetch(`http://localhost:8080/admin/deleteuser/${id}`, {
-            method: 'DELETE',
+          const config = {
             headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
+              Authorization: `Bearer ${token}`,
             },
-          });
-          if (response == 200) {
-            setData(data.filter(user => user.id !== id)); // Update the state to reflect the deletion
-            // Optionally, you can refresh the user list or redirect to another page
-            // window.location.href = "/admin/user"; 
-          }
+          };
+          const response = await axios.get(`http://localhost:8080/admin/detailsuser/${id}`, config);
+          onEditUser(response.data);
         } catch (error) {
-          console.error('Une erreur s\'est produite lors de la suppression de l\'utilisateur : ', error);
+          console.error('Une erreur s\'est produite lors de la récupération des données de l\'utilisateur : ', error);
         }
       };
-      
+    
     return (
         <React.Fragment>
+            <Title>Utilisateurs</Title>
             <Table size="small">
                 <TableHead>
                     <TableRow>
@@ -65,16 +80,16 @@ function ListUser() {
                 <TableBody>
                     {data?.map((user) => (
                         <TableRow key={user.id}>
-                            <TableCell sx={{ color: 'black' }}>{user?.nom}</TableCell>
-                            <TableCell sx={{ color: 'black' }}>{user?.prenom}</TableCell>
-                            <TableCell sx={{ color: 'black' }}>{user?.login}</TableCell>
-                            <TableCell sx={{ color: 'black' }}>{user?.role}</TableCell>
-                            <TableCell sx={{ color: 'black' }}>
-                                <IconButton aria-label="edit" size="small">
-                                    <EditIcon fontSize="inherit" sx={{ color: '#FF6600' }} />
+                            <TableCell sx={{ color: 'black' }}>{user.nom}</TableCell>
+                            <TableCell sx={{ color: 'black' }}>{user.prenom}</TableCell>
+                            <TableCell sx={{ color: 'black' }}>{user.login}</TableCell>
+                            <TableCell sx={{ color: 'black' }}>{user.role}</TableCell>
+                            <TableCell>
+                                <IconButton aria-label="edit" size="small" onClick={() => handleEditClick(user.id)}>
+                                    <EditIcon />
                                 </IconButton>
                                 <IconButton aria-label="delete" size="small" onClick={() => handleDeleteClick(user.id)}>
-                                    <DeleteIcon fontSize="inherit" sx={{ color: '#FF6600' }} />
+                                    <DeleteIcon />
                                 </IconButton>
                             </TableCell>
                         </TableRow>
@@ -82,7 +97,7 @@ function ListUser() {
                 </TableBody>
             </Table>
             {error && (
-                <Link color="#FF6600" href="#" sx={{ mt: 3 }}>
+                <Link href="#" color="secondary">
                     {error}
                 </Link>
             )}

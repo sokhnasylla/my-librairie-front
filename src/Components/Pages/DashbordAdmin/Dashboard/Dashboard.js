@@ -14,11 +14,12 @@ import Grid from '@mui/material/Grid';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Paper } from '@mui/material';
-import SignUp from '../User/SignUp';
+import SignUp from '../User/AjoutUser';
 import ListUser from '../User/ListUser';
 import Livres from '../Livre/livreList';
 
 import { mainListItems, secondaryListItems } from '../listItems';  
+import AjoutLivre from '../Livre/AjoutLivre';
 
 const drawerWidth = 240;
 
@@ -73,7 +74,7 @@ export default function Dashboard() {
   const [showUserList, setShowUserList] = React.useState(false);
   const [showLivreList, setShowLivreList] = React.useState(false);
   const [showForm, setShowForm] = React.useState(false);
-
+  const [showFormEdit,setShowFormEdit] = React.useState(false)
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -82,19 +83,29 @@ export default function Dashboard() {
     setShowUserList(true);
     setShowLivreList(false);
     setShowForm(false);
+    setShowFormEdit(false);
   };
 
   const handleShowLivreList = () => {
     setShowLivreList(true);
     setShowUserList(false);
     setShowForm(false);
+    setShowFormEdit(false);
   };
 
   const handleShowForm = () => {
     setShowForm(true);
     setShowLivreList(false);
     setShowUserList(false);
+    setShowFormEdit(false);
   };
+  
+  const handleShowFormEdit =  () => {
+    setShowFormEdit(true);
+    setShowForm(false);
+    setShowLivreList(false);
+    setShowUserList(false);
+  }
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -124,7 +135,7 @@ export default function Dashboard() {
           </Toolbar>
           <Divider />
           <List component="nav">
-            {mainListItems(handleShowUserList, handleShowLivreList, handleShowForm)}
+            {mainListItems(handleShowUserList, handleShowLivreList, handleShowForm,handleShowFormEdit)}
             {secondaryListItems}
           </List>
         </Drawer>
@@ -159,6 +170,13 @@ export default function Dashboard() {
                 <Grid item xs={12}>
                   <Paper sx={{ p: 2 }}>
                     <SignUp />
+                  </Paper>
+                </Grid>
+              )}
+              {showFormEdit && (
+                <Grid item xs={12}>
+                  <Paper sx={{ p: 2 }}>
+                    <AjoutLivre />
                   </Paper>
                 </Grid>
               )}

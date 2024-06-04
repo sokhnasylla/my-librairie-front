@@ -12,7 +12,7 @@ import { Link } from '@mui/material';
 import { FaBookOpen, FaChartLine, FaUserPlus } from "react-icons/fa";
 import { Book } from '@mui/icons-material';
 
-export const mainListItems = (handleShowUserList, handleShowLivreList, handleShowForm) => (
+export const mainListItems = (handleShowUserList, handleShowLivreList, handleShowForm,handleShowFormEdit) => (
   <React.Fragment>
     <ListItemButton onClick={handleShowUserList}>
       <ListItemIcon>
@@ -32,7 +32,8 @@ export const mainListItems = (handleShowUserList, handleShowLivreList, handleSho
       </ListItemIcon>
       <ListItemText primary="Ajouter un utilisateur" />
     </ListItemButton>
-    <ListItemButton>
+
+    <ListItemButton onClick={handleShowFormEdit}>
       <ListItemIcon>
         <FaBookOpen />
       </ListItemIcon>
