@@ -11,4 +11,7 @@ export const getTokenFromLocalStorage = () => {
   export const clearTokenFromLocalStorage = () => {
     localStorage.removeItem('userToken');
   };
-  
+  export function getUserRoleFromLocalStorage() {
+    const userRole = localStorage.getItem('userRole');
+    return userRole || null;
+  }

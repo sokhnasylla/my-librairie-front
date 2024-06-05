@@ -49,13 +49,13 @@ const[role,setRole]= React.useState("");
     event.preventDefault();
     setLoading(true);
     setError(null);
-    const data = new FormData(event.currentTarget);
-   
+    
     try{
       const response = await axios.post("http://localhost:8080/auth/signIn",{
         login,
         password
       });
+
       console.log(response);
       if(response.data.statusCode=200){
         /*console.log(response.data.token);*/
@@ -70,8 +70,6 @@ const[role,setRole]= React.useState("");
     }finally{
       setLoading(false);
     }
-  
-  
   };
   const fetchUserDetails = async () => {
     const token = getTokenFromLocalStorage();
@@ -101,8 +99,6 @@ const[role,setRole]= React.useState("");
     return <Navigate to="/home"/>
    }
    
-    
- 
    }
 
   return (

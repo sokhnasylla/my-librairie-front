@@ -7,14 +7,13 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import Title from '../Title';
-import EditUser from './EditUser'
 
 
-function ListUser(onEditUser) {
+function ListUser({onEditUser}) {
     const [data, setData] = useState([]);
     const [error, setError] = useState(null);
-    const [editingUserId, setEditingUserId] = useState(null);
     const token = getTokenFromLocalStorage();
+  
 
     useEffect(() => {
         const fetchData = async () => {
@@ -33,36 +32,53 @@ function ListUser(onEditUser) {
         fetchData();
     }, [token]);
 
-    const handleDeleteClick = async (id) => {
-        console.log('ID de l\'utilisateur à supprimer:', id);
-        try {
-            const response = await axios.delete(`http://localhost:8080/admin/deleteuser/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            if (response.status === 200) {
-                setData(data.filter(user => user.id !== id)); 
-            }
-        } catch (error) {
-            console.error('Une erreur s\'est produite lors de la suppression de l\'utilisateur : ', error);
+   
+    const handleDeleteClick = async(id) =>{
+       // console.log(id);
+       try{
+        const response = await fetch(`http://localhost:8080/admin/deleteuser/${id}`,{
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+        });
+        if(response.status === 200){
+            const fetchData = async () => {
+                try {
+                    const config = {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    };
+                    const response = await axios.get("http://localhost:8080/admin/users", config);
+                    setData(response.data);
+                } catch (error) {
+                    setError(`Erreur: ${error.message}`);
+                }
+            };
+            fetchData();
         }
-    };
-
-    const handleEditClick = async (id) => {
+       }catch(error){
+        console.error('une erreur s\'est produite lors de la suppression de l\'utilisateur : ',error);
+       }
+      };
+      const handleEditClick = async(id) =>{
         console.log(id);
-        try {
-          const config = {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          };
-          const response = await axios.get(`http://localhost:8080/admin/detailsuser/${id}`, config);
-          onEditUser(response.data);
-        } catch (error) {
-          console.error('Une erreur s\'est produite lors de la récupération des données de l\'utilisateur : ', error);
+        try{
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+            };
+            const response = await axios.get(`http://localhost:8080/admin/detailsuser/${id}`,config);
+            onEditUser(response.data);
+            //console.log(response.data);
+        }catch(error){
+          console.error('Une erreur s\'est produite lors de la recuperation des infos du client : ',error);
         }
       };
+
     
     return (
         <React.Fragment>
@@ -86,21 +102,17 @@ function ListUser(onEditUser) {
                             <TableCell sx={{ color: 'black' }}>{user.role}</TableCell>
                             <TableCell>
                                 <IconButton aria-label="edit" size="small" onClick={() => handleEditClick(user.id)}>
-                                    <EditIcon />
+                                    <EditIcon  fontSize="inherit" sx={{color:"#1976D2"}}/>
                                 </IconButton>
                                 <IconButton aria-label="delete" size="small" onClick={() => handleDeleteClick(user.id)}>
-                                    <DeleteIcon />
+                                    <DeleteIcon fontSize="inherit" sx={{color:"red"}} />
                                 </IconButton>
                             </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
             </Table>
-            {error && (
-                <Link href="#" color="secondary">
-                    {error}
-                </Link>
-            )}
+            {error && <Link to="#" style={{ color: "#FF6600" }}>{error}</Link>}
         </React.Fragment>
     );
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaUserEdit } from 'react-icons/fa';
 import { Avatar, Box, Button, Container, CssBaseline, Grid, TextField, Typography } from '@mui/material';
 import Alert from 'react-bootstrap/Alert';
@@ -8,60 +8,36 @@ import { getTokenFromLocalStorage } from '../../Auth/authUtils';
 
 const defaultTheme = createTheme();
 
-export default function EditUser(props) {
-    const [nom, setNom] = useState('');
-    const [prenom, setPrenom] = useState('');
-    const [login, setLogin] = useState('');
-    const [password, setPassword] = useState('');
-    const [role, setRole] = useState('');
+export default function EditUser({ user, onClose }) {
+    const [formData, setFormData] = useState({ ...user });
     const [error, setError] = useState(null);
     const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+    const token = getTokenFromLocalStorage();
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8080/admin/detailsuser/${props.userId}`, {
-                    headers: {
-                        Authorization: `Bearer ${getTokenFromLocalStorage()}`,
-                    },
-                });
-                const userData = response.data;
-                setNom(userData.nom);
-                setPrenom(userData.prenom);
-                setLogin(userData.login);
-                setRole(userData.role);
-            } catch (error) {
-                console.error('Erreur lors du chargement des détails de l\'utilisateur : ', error);
-            }
-        };
-        if (props.userId) {
-            fetchData();
-        }
-    }, [props.userId]);
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.put(`http://localhost:8080/admin/updateuser/${props.userId}`, {
-                nom,
-                prenom,
-                login,
-                password,
-                role,
-            }, {
+            const config = {
                 headers: {
-                    Authorization: `Bearer ${getTokenFromLocalStorage()}`,
+                    Authorization: `Bearer ${token}`,
                 },
-            });
-            if (response.status === 200) {
-                setShowSuccessAlert(true);
-                // Fermer le formulaire d'édition après une modification réussie
-                props.onClose();
-            }
+            };
+            await axios.put(`http://localhost:8080/admin/updateuser/${formData.id}`, formData, config);
+            setShowSuccessAlert(true);
+            onClose();
         } catch (error) {
-            setError(`Erreur: ${error.message}`);
+            setError(`Une erreur s'est produite lors de la mise à jour de l'utilisateur : ${error.message}`);
         }
     };
+
+    useEffect(() => {
+        setFormData({ ...user });
+    }, [user]);
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -101,39 +77,35 @@ export default function EditUser(props) {
                                     fullWidth
                                     id="nom"
                                     label="Nom"
-                                    value={nom}
-                                    onChange={(e) => setNom(e.target.value)}
+                                    value={formData.nom}
+                                    onChange={handleChange}
                                     autoFocus
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <TextField
+                                    autoComplete="given-name"
+                                    name="prenom"
                                     required
                                     fullWidth
                                     id="prenom"
                                     label="Prenom"
-                                    value={prenom}
-                                    onChange={(e) => setPrenom(e.target.value)}
+                                    value={formData.prenom}
+                                    onChange={handleChange}
+                                    autoFocus
                                 />
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField
-                                    required
-                                    fullWidth
-                                    id="login"
-                                    label="Login"
-                                    value={login}
-                                    onChange={(e) => setLogin(e.target.value)}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    name="password"
-                                    label="Password"
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                   autoComplete="given-name"
+                                   name="login"
+                                   required
+                                   fullWidth
+                                   id="login"
+                                   label="Login"
+                                   value={formData.login}
+                                   onChange={handleChange}
+                                   autoFocus
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -142,8 +114,8 @@ export default function EditUser(props) {
                                     fullWidth
                                     name="role"
                                     label="Role"
-                                    value={role}
-                                    onChange={(e) => setRole(e.target.value)}
+                                    value={formData.role}
+                                    onChange={handleChange}
                                 />
                             </Grid>
                         </Grid>
