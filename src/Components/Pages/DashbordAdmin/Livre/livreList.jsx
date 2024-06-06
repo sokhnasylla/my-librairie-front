@@ -7,7 +7,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import { getTokenFromLocalStorage} from '../../Auth/authUtils';
 
-function Livres() {
+function Livres({onEditLivre}) {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
   const token = getTokenFromLocalStorage();
@@ -17,25 +17,6 @@ function Livres() {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
- /*  const handleDelete = async (id) => {
-    console.log('ID du livre à supprimer:', id); // Journal de l'ID
-    try {
-      if (!id) {
-        console.error('ID du livre est indéfini');
-        return;
-      }
-
-      const token = getTokenFromLocalStorage(); 
-      const config = {
-        headers: { Authorization: `Bearer ${token}` }
-      };
-      await axios.delete(`http://localhost:8080/admin/deletelivre/${id}`, config);
-      setDeletedIds([...deletedIds, id]);
-    } catch (error) {
-      console.error('Erreur lors de la suppression du livre:', error);
-      setError(`Erreur: ${error.message}`);
-    }
-  }; */
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -84,9 +65,25 @@ function Livres() {
    }catch(error){
     console.error('une erreur s\'est produite lors de la suppression du livre : ',error);
    }
-  }
+  };
 
+    const handleEditClick = async(id) =>{
+      console.log(id);
+      try{
+          const config = {
+              headers: {
+                  Authorization: `Bearer ${token}`
+              },
+          };
+          const response = await axios.get(`http://localhost:8080/admin/livreDetails/${id}`,config);
+          onEditLivre(response.data);
+          //console.log(response.data);
+      }catch(error){
+        console.error('Une erreur s\'est produite lors de la recuperation des infos du livre : ',error);
+      }
+    };
 
+ 
   return (
     <React.Fragment>
       <Table size="small">
@@ -114,7 +111,7 @@ function Livres() {
                 <TableCell sx={{ color: 'black' }}>{formatDate(livre?.datePublication)}</TableCell>
                 <TableCell sx={{ color: 'black' }}>
                   <IconButton aria-label="edit" size="small">
-                    <EditIcon fontSize="inherit" sx={{ color: '#1976D2' }} />
+                    <EditIcon fontSize="inherit" sx={{ color: '#1976D2' }}  onClick={() => handleEditClick(livre.id)} />
                   </IconButton>
                   <IconButton aria-label="delete" size="small" onClick={() => handleDeleteClick(livre.id)}>
                     <DeleteIcon fontSize="inherit" sx={{ color: 'red' }} />

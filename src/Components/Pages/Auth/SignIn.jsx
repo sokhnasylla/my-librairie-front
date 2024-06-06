@@ -3,103 +3,79 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import background from '../../../Components/images/background.png'
-import { InputLabel, MenuItem, Select } from '@mui/material';
+import background from '../../../Components/images/background.png';
 import { useState } from 'react'; 
 import axios from 'axios';
 import { getTokenFromLocalStorage, storeTokenInLocalStorage } from './authUtils';
 import { Navigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-
-function Copyright(props) {
-
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-     {' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
-
-// TODO remove, this demo shouldn't need to reset the theme.
+import {jwtDecode }from 'jwt-decode';
+import Alert from 'react-bootstrap/Alert';
 
 const defaultTheme = createTheme();
 
 function SignInSide() {
-const[login,setLogin]= React.useState("");
-const[password,setPassword]=React.useState("");
-const[loading,setLoading]=React.useState(false);
-const[error,setError]=React.useState(false);
-const[isLoggedSuccess,setLoggedSucess]=React.useState(false);
-const[role,setRole]= React.useState("");
+  const [login, setLogin] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isLoggedSuccess, setLoggedSuccess] = useState(false);
+  const [role, setRole] = useState("");
+  const [showErrorAlert, setShowErrorAlert] = useState(false); // Nouvel état pour afficher l'alerte d'erreur
 
-  
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
     setError(null);
     
-    try{
-      const response = await axios.post("http://localhost:8080/auth/signIn",{
+    try {
+      const response = await axios.post("http://localhost:8080/auth/signIn", {
         login,
         password
       });
 
-      console.log(response);
-      if(response.data.statusCode=200){
-        /*console.log(response.data.token);*/
-        setLoggedSucess(true);
+      if (response.data.statusCode === 200) {
+        setLoggedSuccess(true);
         storeTokenInLocalStorage(response.data.token);
-      }
-      else{
+      } else {
         setError(response.data.message);
+        setShowErrorAlert(true); // Affiche l'alerte d'erreur
       }
-    }catch(error){
-      console.error("Error lors de la connexion");
-    }finally{
-      setLoading(false);
-    }
-  };
-  const fetchUserDetails = async () => {
-    const token = getTokenFromLocalStorage();
-    const mytoken = jwtDecode(token);
-    const login = mytoken.sub;
-    /*console.log(login);*/
-
-    try {
-      const response = await axios.get(`http://localhost:8080/public/searchByLogin?login=${login}`);
-      // console.log(response.data[0].role);
-      setRole(response.data[0].role)
-
-    } catch (error) {
-      console.error("Error lors de la connexion", error);
+    } catch (e) {
+      setError("Erreur lors de la connexion. Vérifiez votre login ou mot de passe.");
+      setShowErrorAlert(true); // Affiche l'alerte d'erreur
     } finally {
       setLoading(false);
     }
-    
   };
-   if(isLoggedSuccess){
-   fetchUserDetails();
-  /* console.log(role);*/
-   if(role === 'ADMIN'){
-    return <Navigate to="/admin/dashboard"/>
-   }
-   if(role === 'USER'){
-    return <Navigate to="/home"/>
-   }
-   
-   }
+
+  const fetchUserDetails = async () => {
+    const token = getTokenFromLocalStorage();
+    const myToken = jwtDecode(token);
+    const login = myToken.sub;
+
+    try {
+      const response = await axios.get(`http://localhost:8080/public/searchByLogin?login=${login}`);
+      setRole(response.data[0].role);
+    } catch (error ) {
+      console.error("Erreur lors de la récupération des détails de l'utilisateur", error);
+    }
+  };
+
+  if (isLoggedSuccess) {
+    fetchUserDetails();
+    if (role === 'ADMIN') {
+      return <Navigate to="/admin/dashboard" />;
+    }
+    if (role === 'USER') {
+      return <Navigate to="/home" />;
+    }
+  }
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -111,7 +87,7 @@ const[role,setRole]= React.useState("");
           sm={4}
           md={7}
           sx={{
-            backgroundImage:`url(${background})`,
+            backgroundImage: `url(${background})`,
             backgroundRepeat: 'no-repeat',
             backgroundColor: (t) =>
               t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
@@ -133,8 +109,13 @@ const[role,setRole]= React.useState("");
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-             Connexion
+              Connexion
             </Typography>
+            {showErrorAlert && ( // Affiche l'alerte d'erreur si showErrorAlert est true
+              <Alert variant="danger" onClose={() => setShowErrorAlert(false)} dismissible>
+                Erreur: Le login ou le mot de passe est incorrect.
+              </Alert>
+            )}
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
               <TextField
                 margin="normal"
@@ -162,27 +143,26 @@ const[role,setRole]= React.useState("");
               />
               {loading ? (
                 <Button
-                fullWidth
-                disabled
-                sx={{mt:4,mb:2}}
+                  fullWidth
+                  disabled
+                  sx={{ mt: 4, mb: 2 }}
                 >
-               loading ...
+                  loading ...
                 </Button>
-              ):(
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 ,backgroundColor:"#4F3127",
-                  "&:hover":{
-                    backgroundColor:"#4F3127",
-                  },
-                }}
-              >
-               Se connecter
-              </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 ,backgroundColor:"#4F3127",
+                    "&:hover":{
+                      backgroundColor:"#4F3127",
+                    },
+                  }}
+                >
+                  Se connecter
+                </Button>
               )}
-              <Copyright sx={{ mt: 5 }} />
             </Box>
           </Box>
         </Grid>
@@ -190,4 +170,5 @@ const[role,setRole]= React.useState("");
     </ThemeProvider>
   );
 }
+
 export default SignInSide;

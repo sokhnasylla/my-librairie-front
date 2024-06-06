@@ -21,6 +21,7 @@ import Livres from '../Livre/livreList';
 import { mainListItems, secondaryListItems } from '../listItems';  
 import AjoutLivre from '../Livre/AjoutLivre';
 import EditUser from '../User/EditUser';
+import EditLivre from '../Livre/EditLivre';
 
 const drawerWidth = 240;
 
@@ -109,11 +110,18 @@ export default function Dashboard() {
   }
 
   const [selectedUser, setSelectedUser] = React.useState(null);
+  const [selectedLivre, setSelectedLivre] = React.useState(null);
 
     const handleEditUser = (user) => {
         setSelectedUser(user);
         setShowUserList(false);
     };
+
+    const handleEditLivre = (livre)  => {
+     setSelectedLivre(livre);
+     setShowLivreList(false);
+
+    }
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -170,7 +178,7 @@ export default function Dashboard() {
               {showLivreList && (
                 <Grid item xs={12}>
                   <Paper sx={{ p: 2 }}>
-                    <Livres />
+                    <Livres onEditLivre={handleEditLivre}/>
                   </Paper>
                 </Grid>
               )}
@@ -194,6 +202,16 @@ export default function Dashboard() {
                 <EditUser
                     user={selectedUser}
                     onClose={() => setSelectedUser(null)}
+                />
+                 </Paper>
+                </Grid>
+            )}
+             {selectedLivre &&(
+                <Grid item xs={12}>
+                <Paper sx={{ p: 2 }}>
+                <EditLivre
+                    livre={selectedLivre}
+                    onClose={() => setSelectedLivre(null)}
                 />
                  </Paper>
                 </Grid>
