@@ -110,6 +110,16 @@ export default function EditUser({ user, onClose }) {
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField
+                                    fullWidth
+                                    name="password"
+                                    label="Nouveau mot de passe"
+                                    type="password"
+                                    value={formData.password || ''}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
                                     required
                                     fullWidth
                                     name="role"

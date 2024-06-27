@@ -105,7 +105,7 @@ function AjoutLivre() {
           <MdLibraryAdd/>
           </Avatar>
           <Typography component="h1" variant="h5">
-            Ajout
+            ajout
           </Typography>
           {showSuccessAlert && (
             <Alert variant="success" onClose={() => setShowSuccessAlert(false)} dismissible>

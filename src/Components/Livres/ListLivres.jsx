@@ -1,18 +1,28 @@
-import { Grid, Typography, Card, CardMedia, CardContent, Box, IconButton } from '@mui/material';
+import { Grid, Typography, Card, CardMedia, CardContent, Box, IconButton, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { getTokenFromLocalStorage } from '../Pages/Auth/authUtils';
 import axios from 'axios';
 import { AiFillInteraction } from 'react-icons/ai';
+import { jwtDecode } from 'jwt-decode';
+import SearchAppBar from '../Pages/HomePublic';
 
 function ListLivres() {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
   const token = getTokenFromLocalStorage();
+  const [quantities, setQuantities] = useState({});
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
+ const [userlogin,setUserLogin]= useState("");
+  useEffect(() =>{
+    if(token){
+      const decode = jwtDecode(token);
+      setUserLogin(decode.sub)
+    }
+  },[token]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,19 +42,19 @@ function ListLivres() {
     fetchData();
   }, [token]);
 
-
+ 
   const handleBorrow = async (livreId) => {
     console.log(livreId);
-    const userToken = getTokenFromLocalStorage();
-    const decodedToken = JSON.parse(atob(userToken.split('.')[1])); // Décodez le token JWT pour obtenir les informations de l'utilisateur
-    const userId = decodedToken.id; // Assurez-vous que l'ID de l'utilisateur est présent dans le token JWT
-
+    console.log(userlogin);
+    const quantite = quantities[livreId] || 1;
+  
     try {
-    
-      const response = await axios.post("http://localhost:8080/emprunts", {
-        userId,
-        livreId,
-      }, {
+      const response = await axios.post("http://localhost:8080/emprunts", null, {
+        params: {
+          userLogin: userlogin,
+          livreId,
+          quantiteLivre: quantite 
+        },
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -55,51 +65,61 @@ function ListLivres() {
     }
   };
 
+  
+  const handleQuantiteChange = (livreId, value) => {
+    setQuantities(prevQuantities => ({
+      ...prevQuantities,
+      [livreId]: Math.max(1, (prevQuantities[livreId] || 1) + value)
+    }));
+  };
   return (
     <Box sx={{ p: 2 }}>
-    <Grid container spacing={2}>
-      {data?.map((livre) => (
-        <Grid item xs={12} key={livre.id}>
-          <Card sx={{ display: 'flex' }}>
-            <CardMedia
-              component="img"
-              sx={{ width: 140, objectFit: 'contain' }}
-              image={livre.image && `data:image/png;base64,${livre.image}`}
-              alt={livre.titre}
-            />
-            <CardContent>
-              <Typography variant="h5" component="div">
-                {livre.titre}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Auteur: {livre.auteur}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Theme: {livre.theme}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Genre: {livre.genre}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Date de Publication: {formatDate(livre.datePublication)}
-              </Typography>
-              <IconButton  onClick={() => handleBorrow(livre.id)}>
-              <AiFillInteraction/> 
-              </IconButton>
-              {/*  //onclick il get les donnes du user(id,nom,prenom,login) 
-               //et les stocke dans la table emprunt et get aussi l'id du livre */}
-            </CardContent>
-          </Card>
-        </Grid>
-      ))}
-      {error && (
-        <Grid item xs={12}>
-          <Typography variant="h6" color="error" align="center" sx={{ mt: 3 }}>
-            {error}
-          </Typography>
-        </Grid>
-      )}
-    </Grid>
+      <Grid container spacing={2}>
+        {data?.map((livre) => (
+          <Grid item xs={12} key={livre.id}>
+            <Card sx={{ display: 'flex' }}>
+              <CardMedia
+                component="img"
+                sx={{ width: 140, objectFit: 'contain' }}
+                image={livre.image && `data:image/png;base64,${livre.image}`}
+                alt={livre.titre}
+              />
+              <CardContent>
+                <Typography variant="h5" component="div">
+                  {livre.titre}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Auteur: {livre.auteur}
+                </Typography>
+                
+                <Typography variant="body2" color="text.secondary">
+                  Genre: {livre.genre}
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                  <IconButton onClick={() => handleQuantiteChange(livre.id, -1)} disabled={(quantities[livre.id] || 1) <= 1}>
+                    -
+                  </IconButton>
+                  <Typography variant="body2" sx={{ mx: 1 }}>{quantities[livre.id] || 1}</Typography>
+                  <IconButton onClick={() => handleQuantiteChange(livre.id, 1)}>
+                    +
+                  </IconButton>
+                </Box>
+                
+                <IconButton onClick={() => handleBorrow(livre.id)}>
+                  <AiFillInteraction />
+                </IconButton>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+        {error && (
+          <Grid item xs={12}>
+            <Typography variant="h6" color="error" align="center" sx={{ mt: 3 }}>
+              {error}
+            </Typography>
+          </Grid>
+        )}
+      </Grid>
     </Box>
   );
 }

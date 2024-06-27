@@ -207,7 +207,7 @@ export default function Dashboard() {
                 </Grid>
             )}
              {selectedLivre &&(
-                <Grid item xs={12}>
+                <Grid item xs={12}> 
                 <Paper sx={{ p: 2 }}>
                 <EditLivre
                     livre={selectedLivre}

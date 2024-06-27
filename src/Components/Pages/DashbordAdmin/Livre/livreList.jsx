@@ -6,6 +6,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import { getTokenFromLocalStorage} from '../../Auth/authUtils';
+import Title from '../Title';
 
 function Livres({onEditLivre}) {
   const [data, setData] = useState([]);
@@ -83,9 +84,10 @@ function Livres({onEditLivre}) {
       }
     };
 
- 
+  
   return (
     <React.Fragment>
+      <Title>Livres</Title>
       <Table size="small">
         <TableHead>
           <TableRow>
