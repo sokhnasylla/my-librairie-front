@@ -2,29 +2,24 @@
 
 import React from 'react';
 import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import BarChartIcon from '@mui/icons-material/BarChart';
-import FilterNoneOutlinedIcon from '@mui/icons-material/FilterNoneOutlined';
-import NoteIcon from '@mui/icons-material/Note';
-import LayersIcon from '@mui/icons-material/Layers';
 import PeopleIcon from '@mui/icons-material/People';
-import { Link } from '@mui/material';
-import { FaBookOpen, FaChartLine, FaUserPlus } from "react-icons/fa";
+import { FaBookOpen, FaUserPlus } from "react-icons/fa";
 import { Book } from '@mui/icons-material';
+import { TfiExchangeVertical } from 'react-icons/tfi';
 
-export const mainListItems = (handleShowUserList, handleShowLivreList, handleShowForm,handleShowFormEdit) => (
+export const mainListItems = (handleShowUserList, handleShowLivreList, handleShowForm,handleShowFormEdit,handleShowEmprunt) => (
   <React.Fragment>
     <ListItemButton onClick={handleShowUserList}>
       <ListItemIcon>
         <PeopleIcon size={25} />
       </ListItemIcon>
-      <ListItemText primary="Utilisateurs" />
+      <ListItemText primary="Gestion des utilisateurs" />
     </ListItemButton>
     <ListItemButton onClick={handleShowLivreList}>
       <ListItemIcon>
         <Book />
       </ListItemIcon>
-      <ListItemText primary="Livres" />
+      <ListItemText primary="Gestion des livres" />
     </ListItemButton>
     <ListItemButton onClick={handleShowForm}>
       <ListItemIcon>
@@ -39,46 +34,13 @@ export const mainListItems = (handleShowUserList, handleShowLivreList, handleSho
       </ListItemIcon>
       <ListItemText primary="Ajouter un livre" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton onClick={handleShowEmprunt}>
       <ListItemIcon>
-        <FilterNoneOutlinedIcon />
+      <TfiExchangeVertical />
       </ListItemIcon>
       <ListItemText primary="Gestion des emprunts" />
     </ListItemButton>
-    <ListItemButton>
-      <ListItemIcon>
-        <NoteIcon />
-      </ListItemIcon>
-      <ListItemText primary="Carnet D'adresse" />
-    </ListItemButton>
-    <ListItemButton>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Supervision Metier" />
-    </ListItemButton>
-    <ListItemButton>
-      <ListItemIcon>
-        <LayersIcon />
-      </ListItemIcon>
-      <ListItemText primary="Supervision Technique" />
-    </ListItemButton>
-    <Link href="/admin/role" color="initial" underline='none'>
-      <ListItemButton>
-        <ListItemIcon>
-          <PeopleIcon />
-        </ListItemIcon>
-        <ListItemText primary="Roles" />
-      </ListItemButton>
-    </Link>
-    <Link href="/admin/user" color="initial" underline='none'>
-      <ListItemButton>
-        <ListItemIcon>
-          <PeopleIcon />
-        </ListItemIcon>
-        <ListItemText primary="Utilisateurs" />
-      </ListItemButton>
-    </Link>
+  
   </React.Fragment>
 );
 

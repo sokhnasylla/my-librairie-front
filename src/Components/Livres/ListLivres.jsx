@@ -1,28 +1,25 @@
-import { Grid, Typography, Card, CardMedia, CardContent, Box, IconButton, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { getTokenFromLocalStorage } from '../Pages/Auth/authUtils';
 import axios from 'axios';
 import { AiFillInteraction } from 'react-icons/ai';
 import { jwtDecode } from 'jwt-decode';
-import SearchAppBar from '../Pages/HomePublic';
+import { Grid, Typography, Card, CardMedia, CardContent, Box, IconButton, Snackbar } from '@mui/material';
+import { Alert } from '@mui/material';
 
 function ListLivres() {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
-  const token = getTokenFromLocalStorage();
   const [quantities, setQuantities] = useState({});
+  const [userLogin, setUserLogin] = useState('');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const token = getTokenFromLocalStorage();
 
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
- const [userlogin,setUserLogin]= useState("");
-  useEffect(() =>{
-    if(token){
+  useEffect(() => {
+    if (token) {
       const decode = jwtDecode(token);
-      setUserLogin(decode.sub)
+      setUserLogin(decode.sub);
     }
-  },[token]);
+  }, [token]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,40 +35,41 @@ function ListLivres() {
         setError(`Erreur: ${error.message}`);
       }
     };
- 
+
     fetchData();
   }, [token]);
 
- 
   const handleBorrow = async (livreId) => {
-    console.log(livreId);
-    console.log(userlogin);
     const quantite = quantities[livreId] || 1;
-  
+
     try {
       const response = await axios.post("http://localhost:8080/emprunts", null, {
         params: {
-          userLogin: userlogin,
+          userLogin: userLogin,
           livreId,
-          quantiteLivre: quantite 
+          quantiteLivre: quantite
         },
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Emprunt enregistré avec succès", response.data);
+      setSnackbarOpen(true); // Ouvre la Snackbar après un emprunt réussi
     } catch (error) {
       console.error("Erreur lors de l'enregistrement de l'emprunt", error);
     }
   };
 
-  
   const handleQuantiteChange = (livreId, value) => {
     setQuantities(prevQuantities => ({
       ...prevQuantities,
       [livreId]: Math.max(1, (prevQuantities[livreId] || 1) + value)
     }));
   };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
+
   return (
     <Box sx={{ p: 2 }}>
       <Grid container spacing={2}>
@@ -91,7 +89,7 @@ function ListLivres() {
                 <Typography variant="body2" color="text.secondary">
                   Auteur: {livre.auteur}
                 </Typography>
-                
+
                 <Typography variant="body2" color="text.secondary">
                   Genre: {livre.genre}
                 </Typography>
@@ -104,7 +102,7 @@ function ListLivres() {
                     +
                   </IconButton>
                 </Box>
-                
+
                 <IconButton onClick={() => handleBorrow(livre.id)}>
                   <AiFillInteraction />
                 </IconButton>
@@ -120,6 +118,12 @@ function ListLivres() {
           </Grid>
         )}
       </Grid>
+      <Snackbar open={snackbarOpen} autoHideDuration={4000} onClose={handleCloseSnackbar} 
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
+          Emprunt enregistré avec succès
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

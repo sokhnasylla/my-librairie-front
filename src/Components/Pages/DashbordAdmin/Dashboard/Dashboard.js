@@ -22,6 +22,7 @@ import { mainListItems, secondaryListItems } from '../listItems';
 import AjoutLivre from '../Livre/AjoutLivre';
 import EditUser from '../User/EditUser';
 import EditLivre from '../Livre/EditLivre';
+import ListEmprunts from '../Emprunt/ListEmprunts';
 
 const drawerWidth = 240;
 
@@ -77,6 +78,7 @@ export default function Dashboard() {
   const [showLivreList, setShowLivreList] = React.useState(false);
   const [showForm, setShowForm] = React.useState(false);
   const [showFormEdit,setShowFormEdit] = React.useState(false)
+  const [showEmprunt,setShowEmprunt] = React.useState(false);
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -86,6 +88,7 @@ export default function Dashboard() {
     setShowLivreList(false);
     setShowForm(false);
     setShowFormEdit(false);
+    setShowEmprunt(false);
   };
 
   const handleShowLivreList = () => {
@@ -93,6 +96,7 @@ export default function Dashboard() {
     setShowUserList(false);
     setShowForm(false);
     setShowFormEdit(false);
+    setShowEmprunt(false);
   };
 
   const handleShowForm = () => {
@@ -100,6 +104,7 @@ export default function Dashboard() {
     setShowLivreList(false);
     setShowUserList(false);
     setShowFormEdit(false);
+    setShowEmprunt(false);
   };
   
   const handleShowFormEdit =  () => {
@@ -107,6 +112,7 @@ export default function Dashboard() {
     setShowForm(false);
     setShowLivreList(false);
     setShowUserList(false);
+    setShowEmprunt(false);
   }
 
   const [selectedUser, setSelectedUser] = React.useState(null);
@@ -114,12 +120,29 @@ export default function Dashboard() {
 
     const handleEditUser = (user) => {
         setSelectedUser(user);
+        setShowLivreList(false);
+        setShowForm(false);
+        setShowFormEdit(false);
         setShowUserList(false);
+        setShowEmprunt(false);
     };
 
     const handleEditLivre = (livre)  => {
      setSelectedLivre(livre);
      setShowLivreList(false);
+     setShowForm(false);
+     setShowFormEdit(false);
+     setShowUserList(false);
+     setShowEmprunt(false);
+
+    }
+
+    const handleShowEmprunt = () => {
+      setShowEmprunt(true);
+      setShowLivreList(false);
+      setShowForm(false);
+      setShowFormEdit(false);
+      setShowUserList(false);
 
     }
 
@@ -151,7 +174,7 @@ export default function Dashboard() {
           </Toolbar>
           <Divider />
           <List component="nav">
-            {mainListItems(handleShowUserList, handleShowLivreList, handleShowForm,handleShowFormEdit)}
+            {mainListItems(handleShowUserList, handleShowLivreList, handleShowForm,handleShowFormEdit,handleShowEmprunt)}
             {secondaryListItems}
           </List>
         </Drawer>
@@ -216,6 +239,13 @@ export default function Dashboard() {
                  </Paper>
                 </Grid>
             )}
+             {showEmprunt && (
+                <Grid item xs={12}>
+                  <Paper sx={{ p: 2 }}>
+                    <ListEmprunts />
+                  </Paper>
+                </Grid>
+              )}
             </Grid>
           </Container>
         </Box>
