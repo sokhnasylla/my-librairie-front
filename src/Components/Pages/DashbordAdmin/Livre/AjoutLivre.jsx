@@ -172,18 +172,7 @@ function AjoutLivre() {
                   value={datePublication}
                   onChange={(e) => setDatePublication(e.target.value)}
                 />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="details"
-                  label="Details"
-                  id="details"
-                  value={details}
-                  onChange={(e) => setDetails(e.target.value)}
-                />
-              </Grid>
+              </Grid>  
               <Grid item xs={12}>
                 <input
                   required

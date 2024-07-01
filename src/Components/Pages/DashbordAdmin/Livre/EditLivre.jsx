@@ -119,17 +119,6 @@ function EditLivre({ livre, onClose }) {
                   onChange={handleChange}
                 />
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="details"
-                  label="Détails"
-                  id="details"
-                  value={formData.details}
-                  onChange={handleChange}
-                />
-              </Grid>
             </Grid>
             <Button
               type="submit"
